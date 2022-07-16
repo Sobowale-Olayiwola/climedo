@@ -1,9 +1,11 @@
 import userRepo from '../repository/user';
-import { hashObject, verifyHash } from '../utils/encryption';
+import { generateToken, hashObject, verifyHash } from '../utils/encryption';
 import {
   createUserSchema, loginSchema, passwordSchema, updateUserSchema,
 } from '../utils/validators/user';
 import RootService from './root';
+
+const { filterJOIValidation, processFailedResponse, processSuccessfulResponse } = RootService;
 
 class UserService extends RootService {
   /**
@@ -19,18 +21,22 @@ class UserService extends RootService {
     try {
       const { error } = createUserSchema.validate(data);
       if (error) {
-        const message = this.filterJOIValidation(error.message);
-        return this.processFailedResponse({ message, code: 412 });
+        const message = filterJOIValidation(error.message);
+        return processFailedResponse({ message, code: 412 });
       }
       const isValid = passwordSchema.validate(data.password);
       if (!isValid) {
-        return this.processFailedResponse({ message: 'password is too weak', code: 412 });
+        return processFailedResponse({ message: 'password is too weak', code: 412 });
+      }
+      const existingUser = await userRepo.getUserByEmail({ email: data.email });
+      if (existingUser) {
+        return processFailedResponse({ message: 'User exists with email.', code: 400 });
       }
       data.password = await hashObject(data.password);
       const user = await userRepo.createUser({ data });
-      return this.processSuccessfulResponse({ payload: user, code: 201 });
+      return processSuccessfulResponse({ payload: user, code: 201 });
     } catch (error) {
-      return this.processFailedResponse({ message: error.message, code: 500 });
+      return processFailedResponse({ message: error.message, code: 500 });
     }
   }
 
@@ -47,21 +53,27 @@ class UserService extends RootService {
     try {
       const { error } = loginSchema.validate(data);
       if (error) {
-        const message = this.filterJOIValidation(error.message);
-        return this.processFailedResponse({ message, code: 412 });
+        const message = filterJOIValidation(error.message);
+        return processFailedResponse({ message, code: 412 });
       }
-      const user = await userRepo.getUserByEmail({ email: data.email });
+      let user = await userRepo.getUserByEmail({ email: data.email });
       if (!user) {
-        return this.processFailedResponse({ message: 'Kindly register. User not found', code: 404 });
+        return processFailedResponse({ message: 'Kindly register. User not found', code: 404 });
       }
       const passwordMatch = await verifyHash({ sentObject: data.password, accurateObject: user.password });
       if (!passwordMatch) {
-        return this.processFailedResponse({ message: 'Incorrect email or password', code: 400 });
+        return processFailedResponse({ message: 'Incorrect email or password', code: 400 });
       }
-      user.password = '';
-      return this.processSuccessfulResponse({ message: 'successfully logged in', payload: user });
+      user = await userRepo.updateUserById({ id: user._id, data: { lastLogin: new Date() } });
+      const payload = {
+        id: user._id,
+        role: user.role,
+      };
+      const token = await generateToken({ payload });
+      user.token = token;
+      return processSuccessfulResponse({ message: 'successfully logged in', payload: user });
     } catch (error) {
-      return this.processFailedResponse({ message: error.message, code: 500 });
+      return processFailedResponse({ message: error.message, code: 500 });
     }
   }
 
@@ -78,11 +90,11 @@ class UserService extends RootService {
     try {
       const user = await userRepo.getUserById({ id });
       if (!user) {
-        return this.processFailedResponse({ message: 'Kindly register. User not found', code: 404 });
+        return processFailedResponse({ message: 'Kindly register. User not found', code: 404 });
       }
-      return this.processSuccessfulResponse({ message: 'user found', payload: user });
+      return processSuccessfulResponse({ message: 'user found', payload: user });
     } catch (error) {
-      return this.processFailedResponse({ message: error.message, code: 500 });
+      return processFailedResponse({ message: error.message, code: 500 });
     }
   }
 
@@ -98,14 +110,14 @@ class UserService extends RootService {
   async updateUserById({ id, data }) {
     const { error } = updateUserSchema.validate(data);
     if (error) {
-      const message = this.filterJOIValidation(error.message);
-      return this.processFailedResponse({ message, code: 412 });
+      const message = filterJOIValidation(error.message);
+      return processFailedResponse({ message, code: 412 });
     }
     const user = await userRepo.updateUserById({ id, data });
     if (!user) {
-      return this.processFailedResponse({ message: 'User update failed', code: 400 });
+      return processFailedResponse({ message: 'User update failed', code: 400 });
     }
-    return this.processSuccessfulResponse({ message: 'User update succesful', payload: user });
+    return processSuccessfulResponse({ message: 'User update succesful', payload: user });
   }
 }
 const userService = new UserService();
