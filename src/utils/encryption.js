@@ -5,8 +5,9 @@
 import { promisify } from 'util';
 import { genSalt, hash, compare } from 'bcrypt';
 import { sign, verify } from 'jsonwebtoken';
+import env from '../config/env';
 
-const { SALT, SIGNATURE } = process.env;
+const { SALT, SIGNATURE } = env;
 
 /**
   * Hashes and the returns the hash of the object passed in as parameter.
