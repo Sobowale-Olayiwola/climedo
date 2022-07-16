@@ -4,6 +4,7 @@ class UserRepository {
   async createUser({ data }) {
     try {
       const user = await User.create(data);
+      user.password = '';
       return user;
     } catch (error) {
       throw new Error(error.message);
@@ -12,7 +13,7 @@ class UserRepository {
 
   async getUserById({ id }) {
     try {
-      const user = await User.findById(id, { password: -1 }).lean();
+      const user = await User.findById(id).select('-password').lean();
       return user;
     } catch (error) {
       throw new Error(error.message);
@@ -30,7 +31,7 @@ class UserRepository {
 
   async updateUserById({ id, data }) {
     try {
-      const result = await User.findByIdAndUpdate(id, data, { new: true, select: { password: -1 } }).lean();
+      const result = await User.findByIdAndUpdate(id, data, { new: true }).select('-password').lean();
       return result;
     } catch (error) {
       throw new Error(error.message);
