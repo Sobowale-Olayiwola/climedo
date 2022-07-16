@@ -6,20 +6,20 @@ class RootService {
      * a property does not match the specification.
      * @returns {string} Formatted version of JOI message string.
      */
-  filterJOIValidation(message) {
+  static filterJOIValidation(message) {
     const regex = /["]+/g;
     return message.replace(regex, '');
   }
 
   /**
      *
-     * This methods is used to format all Failed responses and is called internally only
+     * This methods is used to format all Failed responses
      * @method
      * @property {string} message The error message
      * @property {number} code The status code
      * @returns {object} This always has error set to a string and payload to null.
      */
-  processFailedResponse({ message, code = 400, success = false }) {
+  static processFailedResponse({ message, code = 400, success = false }) {
     return {
       success,
       error: message,
@@ -38,7 +38,7 @@ class RootService {
      * @property {string} responseType A string defining the response type to return
      * @returns {object} This always has error set to null and payload an object.
      */
-  processSuccessfulResponse({
+  static processSuccessfulResponse({
     success = true,
     message,
     payload,
