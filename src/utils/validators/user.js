@@ -37,7 +37,7 @@ const updateUserSchema = Joi.object({
   firstName: Joi.string().label('firstName'),
   lastName: Joi.string().label('lastName'),
   email: Joi.string().email().label('email'),
-  password: Joi.string().min(6).max(100).required()
+  password: Joi.string().min(6).max(100)
     .label('password'),
   middleName: Joi.string().label('middleName'),
   role: Joi.string().valid(...USER_ROLES).label('role'),
