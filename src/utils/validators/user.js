@@ -10,7 +10,7 @@ const createUserSchema = Joi.object({
   email: Joi.string().email().required().label('email'),
   password: Joi.string().min(6).max(100).required()
     .label('password'),
-  middleName: Joi.string().required().label('middleName'),
+  middleName: Joi.string().label('middleName'),
   role: Joi.string().valid(...USER_ROLES).required().label('role'),
 });
 
@@ -36,11 +36,11 @@ passwordSchema.is().min(8) // Minimum length 8
 const updateUserSchema = Joi.object({
   firstName: Joi.string().label('firstName'),
   lastName: Joi.string().label('lastName'),
-  email: Joi.string().email().required().label('email'),
+  email: Joi.string().email().label('email'),
   password: Joi.string().min(6).max(100).required()
     .label('password'),
-  middleName: Joi.string().required().label('middleName'),
-  role: Joi.string().valid(...USER_ROLES).required().label('role'),
+  middleName: Joi.string().label('middleName'),
+  role: Joi.string().valid(...USER_ROLES).label('role'),
 });
 
 export {
