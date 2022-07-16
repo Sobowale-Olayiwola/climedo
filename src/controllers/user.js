@@ -1,6 +1,7 @@
 import userService from '../services/user';
 import RootService from '../services/root';
 
+const { processFailedResponse } = RootService;
 async function createUser(req, res) {
   try {
     const { body: data } = req;
@@ -26,7 +27,7 @@ async function getUserById(req, res) {
     const { id } = req.params;
     if (!id) {
       const code = 422;
-      return res.status(code).json(RootService.processFailedResponse({ message: 'id is required', code }));
+      return res.status(code).json(processFailedResponse({ message: 'id is required', code }));
     }
     const result = await userService.getUserById({ id });
     return res.status(result.status).json(result);
@@ -41,7 +42,7 @@ async function updateUserById(req, res) {
     const { id } = req.params;
     if (!id) {
       const code = 422;
-      return res.status(code).json(RootService.processFailedResponse({ message: 'id is required', code }));
+      return res.status(code).json(processFailedResponse({ message: 'id is required', code }));
     }
     const result = await userService.updateUserById({ id, data });
     return res.status(result.status).json(result);
