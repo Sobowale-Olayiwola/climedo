@@ -4,6 +4,7 @@ import compression from 'compression';
 import helmet from 'helmet';
 import cors from 'cors';
 import hpp from 'hpp';
+import morgan from 'morgan';
 import routes from './routes';
 
 const app = express();
@@ -15,7 +16,7 @@ app.use(compression());
 app.use(helmet());
 app.use(cors());
 app.use(hpp());
-
+app.use(morgan('combined'));
 // respond with "hello world" when a GET request is made to the homepage
 app.get('/', (req, res) => {
   res.json({ message: 'Welcome to IAM service' });
