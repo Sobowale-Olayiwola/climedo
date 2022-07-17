@@ -3,16 +3,12 @@
 import sinon from 'sinon';
 import proxyquire from 'proxyquire';
 import { expect } from 'chai';
-// import {} from '../../src/utils/encryption';
 import {
   createUser, getUserByEmail, getUserById, updateUserById,
 } from '../repository/user.test';
 import userService from '../../src/services/user';
 import UserRepo from '../../src/repository/user';
-import {
-  createUserSchema, loginSchema, passwordSchema, updateUserSchema,
-} from '../../src/utils/validators/user';
-// import {verifyHash} from "../../src/utils/encryption"
+
 const bcryptSaltMock = sinon.spy((object) => '%^@%%@jdhfh');
 const bcryptHashMock = sinon.spy((payload) => 'tdyfhyhfdh356784949i39fhjfhyr7hf');
 const bcryptCompareMock = sinon.spy(() => true);
