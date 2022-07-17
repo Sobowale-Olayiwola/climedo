@@ -4,14 +4,19 @@ import app from './app';
 import connectDB from './models';
 import env from './config/env';
 
-const { PORT } = env;
+const { NODE_ENV } = process.env;
+const { PORT, APP_NAME } = env;
 const server = http.createServer(app);
 
 async function startServer() {
   connectDB();
 
   server.listen(PORT, () => {
-    console.log(`Listening on port ${PORT}...`);
+    if (NODE_ENV === 'production') {
+      console.log(`😃 ${APP_NAME} is LIVE on port ${PORT}`);
+    } else {
+      console.log(`🔥 Development Server is running at http://localhost:${PORT}`);
+    }
   });
 }
 
@@ -23,7 +28,6 @@ process.on('SIGTERM', () => {
   console.log('Closing http server.');
   server.close(() => {
     console.log('Http server closed.');
-    // boolean means [force], see in mongoose doc
     mongoose.connection.close(false, () => {
       console.log('MongoDb connection closed.');
       process.exit(0);

@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
+import env from '../config/env';
 
-const { APP_DB_URI } = process.env;
+const { APP_DB_URI } = env;
 
 // TODO create env for database connection uri
 export default function connectDB() {

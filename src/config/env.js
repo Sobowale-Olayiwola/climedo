@@ -1,13 +1,13 @@
 import dotenv from 'dotenv';
 import appRootPath from 'app-root-path';
 
-dotenv.config({ path: `${appRootPath.path}/.env` });
+dotenv.config({ path: `${appRootPath.path}/src/.env` });
 
 const { NODE_ENV } = process.env;
 
 const environment = {
   development: {
-    PORT: 3000,
+    PORT: process.env.PORT || 3000,
     APP_NAME: 'Climedo_IAM_Service',
     APP_DB_URI: 'mongodb://localhost:27017/climedo',
     SIGNATURE: '23deMerh5SuP3R_z3krss3({34v\t',
@@ -16,7 +16,7 @@ const environment = {
   production: {
     PORT: process.env.PORT || 3000,
     APP_NAME: 'Climedo_IAM_Service',
-    APP_DB_URI: 'mongodb://localhost:27017/climedo',
+    APP_DB_URI: 'mongodb://mongo:27017/climedo',
     SIGNATURE: '23deMerh5SuP3R_z3krss3({34v\t',
     SALT: 10,
   },
