@@ -113,6 +113,12 @@ class UserService extends RootService {
       const message = filterJOIValidation(error.message);
       return processFailedResponse({ message, code: 412 });
     }
+    if (data.password) {
+      const isValid = passwordSchema.validate(data.password);
+      if (!isValid) {
+        return processFailedResponse({ message: 'password is too weak', code: 412 });
+      }
+    }
     const user = await userRepo.updateUserById({ id, data });
     if (!user) {
       return processFailedResponse({ message: 'User update failed', code: 400 });
