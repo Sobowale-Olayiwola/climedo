@@ -118,6 +118,7 @@ class UserService extends RootService {
       if (!isValid) {
         return processFailedResponse({ message: 'password is too weak', code: 412 });
       }
+      data.password = await hashObject(data.password);
     }
     const user = await userRepo.updateUserById({ id, data });
     if (!user) {
