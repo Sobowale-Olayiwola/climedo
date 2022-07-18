@@ -1,5 +1,5 @@
 import express from 'express';
-import expressMongoSanitize from 'mongo-express-sanitize';
+import expressMongoSanitize from 'express-mongo-sanitize';
 import compression from 'compression';
 import helmet from 'helmet';
 import cors from 'cors';
@@ -11,12 +11,12 @@ const app = express();
 
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
 app.use(express.json({ limit: '10mb' }));
-app.use(expressMongoSanitize());
+app.use(morgan('combined'));
+app.use(expressMongoSanitize({ allowDots: true }));
 app.use(compression());
 app.use(helmet());
 app.use(cors());
 app.use(hpp());
-app.use(morgan('combined'));
 // respond with "hello world" when a GET request is made to the homepage
 app.get('/', (req, res) => {
   res.json({ message: 'Welcome to IAM service' });
