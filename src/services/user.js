@@ -108,23 +108,27 @@ class UserService extends RootService {
     * @returns
     */
   async updateUserById({ id, data }) {
-    const { error } = updateUserSchema.validate(data);
-    if (error) {
-      const message = filterJOIValidation(error.message);
-      return processFailedResponse({ message, code: 412 });
-    }
-    if (data.password) {
-      const isValid = passwordSchema.validate(data.password);
-      if (!isValid) {
-        return processFailedResponse({ message: 'password is too weak', code: 412 });
+    try {
+      const { error } = updateUserSchema.validate(data);
+      if (error) {
+        const message = filterJOIValidation(error.message);
+        return processFailedResponse({ message, code: 412 });
       }
-      data.password = await hashObject(data.password);
+      if (data.password) {
+        const isValid = passwordSchema.validate(data.password);
+        if (!isValid) {
+          return processFailedResponse({ message: 'password is too weak', code: 412 });
+        }
+        data.password = await hashObject(data.password);
+      }
+      const user = await userRepo.updateUserById({ id, data });
+      if (!user) {
+        return processFailedResponse({ message: 'User update failed', code: 400 });
+      }
+      return processSuccessfulResponse({ message: 'User update succesful', payload: user });
+    } catch (error) {
+      return processFailedResponse({ message: error.message, code: 500 });
     }
-    const user = await userRepo.updateUserById({ id, data });
-    if (!user) {
-      return processFailedResponse({ message: 'User update failed', code: 400 });
-    }
-    return processSuccessfulResponse({ message: 'User update succesful', payload: user });
   }
 }
 const userService = new UserService();
