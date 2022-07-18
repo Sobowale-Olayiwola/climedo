@@ -17,9 +17,9 @@ app.use(compression());
 app.use(helmet());
 app.use(cors());
 app.use(hpp());
-// respond with "hello world" when a GET request is made to the homepage
+// respond with "Welcome to Climedo IAM service" when a GET request is made to the homepage
 app.get('/', (req, res) => {
-  res.json({ message: 'Welcome to IAM service' });
+  res.json({ message: 'Welcome to Climedo IAM service' });
 });
 
 // pass the app instance to the route file
